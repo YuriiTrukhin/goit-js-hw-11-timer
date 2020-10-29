@@ -1,40 +1,44 @@
 import css from "./css/style.css";
 
-const dayVal = document.querySelector('[data-value= "days"]');
-const hoursVal = document.querySelector('[data-value="hours"]');
-const minsVal = document.querySelector('[data-value="mins"]');
-const secsVal = document.querySelector('[data-value="secs"]');
-const timer = document.querySelector("#timer-1");
-
 class CountdownTimer {
-  constructor({ selector, targetDate }) {
+  constructor({selector,targetDate}) {
     this.selector = selector;
     this.targetDate = targetDate;
+    this.refs = this.getRefs()
   }
-
-  timer = setInterval(() => {
-    const time = this.targetDate - Date.now();
-    this.updateClockface(time);
-  }, 1000);
+  setInt = setInterval(() => {
+    const time = this.targetDate - Date.now(); 
+    time < 0?clearInterval(this.setInt):this.updateClockface(time);
+  }, 1000)  
 
   updateClockface(time) {
-    const days = this.pad(Math.floor(time / (1000 * 60 * 60 * 24)));
-    const hours = this.pad(
-      Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    const { dayVal, hoursVal, minsVal, secsVal} = this.refs;
+    dayVal.textContent = this.pad(Math.floor(time / (1000 * 60 * 60 * 24)));
+    hoursVal.textContent = this.pad(Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
     );
-    const mins = this.pad(Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)));
-    const secs = this.pad(Math.floor((time % (1000 * 60)) / 1000));
-    dayVal.textContent = days;
-    hoursVal.textContent = hours;
-    minsVal.textContent = mins;
-    secsVal.textContent = secs;
+    minsVal.textContent = this.pad(Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)));
+    secsVal.textContent = this.pad(Math.floor((time % (1000 * 60)) / 1000));
+    
   }
-
+getRefs() {
+const timer = document.querySelector(this.selector);
+const dayVal = timer.querySelector('[data-value="days"]');
+const hoursVal = timer.querySelector('[data-value="hours"]');
+const minsVal = timer.querySelector('[data-value="mins"]');
+const secsVal = timer.querySelector('[data-value="secs"]');
+    
+    return {dayVal,hoursVal,minsVal,secsVal}
+}
   pad(value) {
     return String(value).padStart(2, "0");
   }
 }
-new CountdownTimer({
+const timer1 = new CountdownTimer({
   selector: "#timer-1",
+  targetDate: new Date("Dec 31, 2020"),
+});
+
+const timer2 = new CountdownTimer({
+  selector: "#timer-2",
   targetDate: new Date("Dec 31, 2020"),
 });
